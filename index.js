@@ -1,39 +1,45 @@
-console.log("mi primera app en express.js");
-require("dotenv").config();
-const express= require ("express");
-const { corsMiddleware } = require("./shared/middleware/cors");
-const { testConnection } = require("./config/database");
+console.log("Mi primera app en express.js");
+require('dotenv').config();
+const express = require('express');
+const { corsMiddleware } = require('./shared/middleware/cors');
+const { testConnection } = require('./config/database');
+const { syncModels } = require('./shared/models');
+
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 
 app.use(express.json());
 app.use(corsMiddleware);
-const initializeDatabase = async () =>{
-    await testConnection();
+
+// Inicializar base de datos
+const initializeDatabase = async () => {
+  await testConnection();
+  await syncModels();
 };
 
 app.get('/', (req, res) => {
-    res.json({
-        message: '¡Hola! Express funcionando',
-        timestamp: new Date().toISOString(),
-        status: 'success'
-    });
+  console.log(`Sistema de login funcionando correctamente en el puerto ${PORT}`);
+  res.json({
+    message: '¡Hola! Express funcionando con MySQL',
+    timestamp: new Date().toISOString(),
+    status: 'success'
+  });
 });
 
-app.use("/api/v1", require("./routes/auth"));
+// Login
+app.use('/api/v1', require('./routes/auth'));
 
-const starServer = async () => {
-    try {
-        initializeDatabase()
-        app.listen(PORT, () => {
-            console.log(`servidor en http://localhost:${PORT}`);
-
-        });
-    } catch (error) {
-        console.error("error al iniciar el servidor ", error);
-
-    }
-
+// Inicializar servidor
+const startServer = async () => {
+  try {
+    await initializeDatabase();
+    app.listen(PORT, () => {
+      console.log(`Servidor en http://localhost:${PORT}`);
+    });
+  } catch (error) {
+    console.error('Error al iniciar el servidor:', error);
+  }
 };
-starServer();
+
+startServer();
