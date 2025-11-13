@@ -21,7 +21,7 @@ const initializeDatabase = async () => {
 app.get('/', (req, res) => {
   console.log(`Sistema de login funcionando correctamente en el puerto ${PORT}`);
   res.json({
-    message: '¡Hola! Express funcionando con MySQL',
+    message: 'cualquier cosa',
     timestamp: new Date().toISOString(),
     status: 'success'
   });
